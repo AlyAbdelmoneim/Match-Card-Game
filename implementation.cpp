@@ -330,6 +330,13 @@ void Game::PlayerTurn(Player& currentPlayer) {
         cin >> x1 >> y1;
         cout << "choose second card (x y): ";
         cin >> x2 >> y2;
+        // check if the input is a number
+        if(cin.fail()){
+            cout<<"please enter a number"<<endl;
+            cin.clear();
+            cin.ignore(10000, '\n');
+            continue;
+        }
         if(x1<0 || x1>3 || y1<0 || y1 >3 || x2<0 || x2>3 || y2<0 || y2 >3 ){
             cout<<"the numbers entered are out of bounds, enter coordinates between from 0 to 3 "<<endl;
             continue;
