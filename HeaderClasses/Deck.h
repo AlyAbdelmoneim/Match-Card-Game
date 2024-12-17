@@ -26,7 +26,7 @@ public:
     void displayGrid();
     Card** getCards();
     void setCards(Card** cards);
-    int getnumofcards();
+    int& getnumofcards();
     void decreasenumofcards();
     void initializeDeck();
 //milestone 2

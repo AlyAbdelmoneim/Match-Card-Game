@@ -26,7 +26,7 @@ public:
     ~Game();
     void initializeGame();
 
-    void PlayerTurn(Player currentPlayer);
+    void PlayerTurn(Player& currentPlayer);
 
     bool gameEnd();
 
