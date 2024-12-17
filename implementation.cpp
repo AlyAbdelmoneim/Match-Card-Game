@@ -89,12 +89,6 @@ void BonusCard::display() {
         cout << "*" << " ";
     }
 }
-//void BonusCard::setBonusValue(int bonusValue) {
-//    this->cardValue = bonusValue;
-//}
-//int BonusCard::getBonusValue() {
-//    return this->cardValue;
-//}
 
 BonusCard::~BonusCard() {}
 
@@ -113,19 +107,14 @@ void PenaltyCard::display() {
         cout << "*" << " ";
     }
 }
-//void PenaltyCard::setPenaltyValue(int penaltyValue) {
-//    this->cardValue = penaltyValue;
-//}
-//int PenaltyCard::getPenaltyValue() {
-//    return this->cardValue;
-//}
 
 PenaltyCard::~PenaltyCard() {}
 
 
 Deck::Deck() {
     srand(static_cast<unsigned int>(time(nullptr))); // Seed the random number generator
-    this->initializeDeck(); // Properly initialize the deck with different card types
+    this->initializeDeck();
+    numofcards=16;
 }
 
 void Deck::shuffle() {
@@ -172,9 +161,10 @@ void Deck::setCards(Card** cards) {
 int Deck::getnumofcards() {
     return numofcards;
 }
-//void Deck::setnumofcards(int value) {
-//    numofcards-value;
-//}
+void Deck::decreasenumofcards() {
+    getnumofcards()-1;
+}
+
 
 
 //milestone 2
@@ -231,9 +221,9 @@ Card& Deck::revealCard(int x ,int y ) {
 void Deck::hideCard(int x,int y) {
     this->cards[x][y].hide();
 }
-//review this
 void Deck::removeCard(int x,int y ) {
     this->cards[x][y].setIsFaceUp(true);
+    numofcards--;
 }
 
 
@@ -300,6 +290,7 @@ Game::Game(Player player1, Player player2, Deck* deck) {
     this->deck = deck;
     currentPlayerIndex=0;
     skipNextTurn=false;
+    playagain=false;
 }
 
 Game::~Game() {
@@ -315,16 +306,16 @@ void Game::initializeGame() {
     cin >> name;
     this->player2.setName(name);
 
-    this->deck->initializeDeck(); // Ensure the deck has the correct cards
-    this->deck->shuffle();       // Shuffle the deck
-    this->deck->displayGrid();   // Display the initial grid
+    this->deck->initializeDeck();
+    this->deck->shuffle();
+    this->deck->displayGrid();
 
     currentPlayerIndex = 0;
 
     while (!gameEnd()) {
         Player& currentPlayer = (currentPlayerIndex == 0) ? player1 : player2;
-        PlayerTurn(currentPlayer); // Handle the current player's turn
-        switchTurn();              // Switch turns
+        PlayerTurn(currentPlayer);
+        switchTurn();
     }
 }
 
@@ -340,10 +331,10 @@ void Game::PlayerTurn(Player currentPlayer) {
         cout << "choose second card (x y): ";
         cin >> x2 >> y2;
         if(x1<0 || x1>3 || y1<0 || y1 >3 || x2<0 || x2>3 || y2<0 || y2 >3 ){
-            cout<<"wrong input!"<<endl;
+            cout<<"wrong input"<<endl;
         }
         if (x1 == x2 && y1 == y2) {
-            cout << "You can't select the same card twice!" << endl;
+            cout << "you can't select the same card twice" << endl;
             continue;
         }
         if (this->deck->revealCard(x1, y1).getIsFaceUp() || this->deck->revealCard(x2, y2).getIsFaceUp()) {
@@ -356,9 +347,7 @@ void Game::PlayerTurn(Player currentPlayer) {
 
     Card& card1 = this->deck->revealCard(x1, y1);
     Card& card2 = this->deck->revealCard(x2, y2);
-    // card1.reveal();
-    // card2.reveal();
-    // this->deck->displayGrid();
+
 
     if (card1.getCardValue() == 7 && card2.getCardValue() == 7) {
         cout << "two Bonus Cards revealed" << endl;
@@ -370,16 +359,17 @@ void Game::PlayerTurn(Player currentPlayer) {
             currentPlayer.increaseScore(2);
         } else if (choice == 2) {
             currentPlayer.increaseScore(1);
-            PlayerTurn(currentPlayer);
+            playagain = true;
             return;
         }
 
         this->deck->removeCard(x1, y1);
         this->deck->removeCard(x2, y2);
-        // this->deck->setnumofcards(2);
+
+
 
     } else if (card1.getCardValue() == 8 && card2.getCardValue() == 8) {
-        cout << "two Penalty Cards revealed!" << endl;
+        cout << "two Penalty Cards revealed" << endl;
         int choice;
         cout << "enter 1 to lose 2 points, or 2 to lose 1 point and skip the next turn: ";
         cin >> choice;
@@ -425,7 +415,7 @@ void Game::PlayerTurn(Player currentPlayer) {
         this->deck->hideCard((card1.getCardValue() != 8) ? x1 : x2, (card1.getCardValue() != 8) ? y1 : y2);
 
     } else if (card1.getCardValue() == card2.getCardValue()) {
-        cout << "match " << currentPlayer.getName() << " gains 1 point!" << endl;
+        cout << "match " << currentPlayer.getName() << " gains 1 point" << endl;
         currentPlayer.increaseScore(1);
         this->deck->removeCard(x1, y1);
         this->deck->removeCard(x2, y2);
@@ -449,6 +439,8 @@ void Game::PlayerTurn(Player currentPlayer) {
 bool Game::gameEnd() {
     if (this->deck->getnumofcards() <= 1) {
         cout << "game over " << endl;
+        cout<<player1.getName()<<"'s score:"<<player1.getScore()<<endl;
+        cout<<player2.getName()<<"'s score:"<<player2.getScore()<<endl;
         if (player1.getScore() > player2.getScore()) {
             cout << player1.getName() << " wins" << endl;
         } else if (player2.getScore() > player1.getScore()) {
@@ -488,6 +480,10 @@ bool Game::gameEnd() {
 
 void Game::switchTurn() {
 
+    if(playagain) {
+    currentPlayerIndex = (currentPlayerIndex + 1) % 2;
+        playagain=false;
+     }
     if (skipNextTurn) {
         PlayerTurn(currentPlayerIndex ? player1 : player2);
         cout << "Turn is skipped " << endl;

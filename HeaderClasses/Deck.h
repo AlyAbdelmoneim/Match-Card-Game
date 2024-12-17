@@ -27,8 +27,7 @@ public:
     Card** getCards();
     void setCards(Card** cards);
     int getnumofcards();
-    void setnumofcards(int value);
-
+    void decreasenumofcards();
     void initializeDeck();
 //milestone 2
     Card& revealCard(int x, int y);

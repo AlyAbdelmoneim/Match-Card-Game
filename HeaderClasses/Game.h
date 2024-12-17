@@ -15,6 +15,7 @@ class Game {
 private:
     //checked--
     bool skipNextTurn;
+    bool playagain;
     Player player1;
     Player player2;
     Deck* deck;
