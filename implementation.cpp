@@ -331,14 +331,19 @@ void Game::PlayerTurn(Player& currentPlayer) {
         cout << "choose second card (x y): ";
         cin >> x2 >> y2;
         if(x1<0 || x1>3 || y1<0 || y1 >3 || x2<0 || x2>3 || y2<0 || y2 >3 ){
-            cout<<"wrong input"<<endl;
+            cout<<"the numbers entered are out of bounds, enter coordinates between from 0 to 3 "<<endl;
+            continue;
         }
         if (x1 == x2 && y1 == y2) {
             cout << "you can't select the same card twice" << endl;
             continue;
         }
-        if (this->deck->revealCard(x1, y1).getIsFaceUp() || this->deck->revealCard(x2, y2).getIsFaceUp()) {
+        if (this->deck->revealCard(x1, y1).getIsFaceUp()) {
             cout << "the first card that has been selected was already chosen, please choose a different card" << endl;
+            continue;
+        }
+        if ( this->deck->revealCard(x2, y2).getIsFaceUp()) {
+            cout << "the second card that has been selected was already chosen, please choose a different card" << endl;
             continue;
         }
         break;
@@ -478,18 +483,10 @@ bool Game::gameEnd() {
 void Game::switchTurn() {
 
     if(playagain) {
-        cout<<"number of cards left:"<<this->deck->getnumofcards()<<endl;
-        cout<<player1.getName()<<"'s score:"<<player1.getScore()<<endl;
-        cout<<player2.getName()<<"'s score:"<<player2.getScore()<<endl;
-        cout<<""<<endl;
     currentPlayerIndex = (currentPlayerIndex + 1) % 2;
         playagain=false;
      }
     if (skipNextTurn) {
-        cout<<"number of cards left:"<<this->deck->getnumofcards()<<endl;
-        cout<<player1.getName()<<"'s score:"<<player1.getScore()<<endl;
-        cout<<player2.getName()<<"'s score:"<<player2.getScore()<<endl;
-        cout<<""<<endl;
         PlayerTurn(currentPlayerIndex ? player1 : player2);
         cout << "Turn is skipped " << endl;
         skipNextTurn = false;
